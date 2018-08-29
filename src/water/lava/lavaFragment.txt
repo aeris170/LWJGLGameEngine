@@ -1,0 +1,34 @@
+#version 400 core
+
+in vec2 textureCoords;
+in vec4 clipSpace;
+in float visibility;
+
+out vec4 out_Color;
+
+uniform sampler2D lavaTexture;
+uniform sampler2D dudvMap;
+uniform sampler2D depthMap;
+
+uniform vec3 skyColorDay;
+uniform vec3 skyColorNight;
+uniform float blendFactor;
+
+uniform float moveFactor;
+
+const float waveStrength = 5;
+
+void main(void) {
+
+	vec2 normalizedDeviceCoords = (clipSpace.xy/clipSpace.w) / 2.0 + 0.5;
+	
+	vec2 distortedTexCoords = texture(dudvMap, vec2(textureCoords.x + moveFactor, textureCoords.y)).rg * 0.02;
+	distortedTexCoords = textureCoords + vec2(distortedTexCoords.x, distortedTexCoords.y);
+
+	vec4 lavaColor = texture(lavaTexture, distortedTexCoords);
+	
+	vec3 finalSkyColor = mix(skyColorDay, skyColorNight, blendFactor);
+	
+	//out_Color = mix(vec4(finalSkyColor, 1.0), lavaColor, visibility);
+	out_Color = lavaColor;
+}

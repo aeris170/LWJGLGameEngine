@@ -1,0 +1,38 @@
+#version 330
+
+in vec2 passed_textureCoords;
+
+out vec4 out_color;
+
+uniform vec3 color;
+uniform sampler2D fontAtlas;
+
+uniform float width;
+uniform float edge;
+
+uniform float borderWidth;
+uniform float borderEdge;
+
+uniform vec2 offset;
+
+uniform vec3 outlineColor;
+
+float fakeSmoothStep(float edge0, float edge1, float x) {
+	//smoothstep sometimes causes problems on some computers. this is added because of it.
+    float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    return t * t * (3.0 - 2.0 * t);
+}
+
+void main(void){
+
+	float distance = 1.0 - texture(fontAtlas, passed_textureCoords).a;
+	float alpha = 1.0 - fakeSmoothStep(width, width + edge, distance);
+	
+	float outlineDistance = 1.0 - texture(fontAtlas, passed_textureCoords + offset).a;
+	float outlineAlpha = 1.0 - fakeSmoothStep(borderWidth, borderWidth + borderEdge, outlineDistance);
+	
+	float overallAlpha = alpha + (1.0 - alpha) * outlineAlpha;
+	vec3 overallColor = mix(outlineColor, color, alpha / outlineAlpha);
+	
+	out_color = vec4(overallColor, overallAlpha);
+}
