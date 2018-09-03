@@ -34,11 +34,22 @@ public class NormalMappingRenderer {
 			prepareTexturedModel(model, shadowMapTexture);
 			final List<Entity> batch = entities.get(model);
 			for(final Entity entity : batch) {
-				prepareInstance(entity);
 				if(entity instanceof Player) {
-					final Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
-							Entity.getRotationQuat(entity.getRotX(), entity.getRotY(), entity.getRotZ()), entity.getScale());
+					Matrix4f transformationMatrix = null;
+					if(((Player) entity).flagS == 1 || ((Player) entity).flagS + ((Player) entity).flagF == 2) {
+						transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
+								((Player) entity).getGazeVector(),
+								((Player) entity).getPerpVector(), ((Player) entity).getUpVector(), entity.getRotX(), entity.getRotY(), entity.getRotZ(),
+								entity.getScale(), true);
+					} else {
+						transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), ((Player) entity).getGazeVector(),
+								((Player) entity).getPerpVector(), ((Player) entity).getUpVector(), entity.getRotX(), entity.getRotY(), entity.getRotZ(),
+								entity.getScale(), false);
+					}
 					shader.loadTransformationMatrix(transformationMatrix);
+					shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
+				} else {
+					prepareInstance(entity);
 				}
 				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 			}

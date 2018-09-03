@@ -20,7 +20,7 @@ uniform vec3 skyColorDay;
 uniform vec3 skyColorNight;
 uniform float blendFactor;
 
-const float minimumLight = 0.2;
+const float minimumLight = 0.4;
 const int pcfCount = 2;
 const float totalTexels = (pcfCount * 2.0 + 1.0) * (pcfCount * 2.0 + 1.0);
 

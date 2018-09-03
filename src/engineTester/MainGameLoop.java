@@ -43,6 +43,7 @@ public class MainGameLoop {
 
 	public static Light sun;
 	private static String fps;
+	public static Player player;
 
 	public static void main(final String[] args) {
 
@@ -50,9 +51,15 @@ public class MainGameLoop {
 
 		final Loader loader = new Loader();
 		TextMaster.init(loader);
-		final TexturedModel playerModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("sphere", loader), new ModelTexture(loader.loadTexture("sphereDay", false)));
+		final ModelTexture sphereTextureAtlas = new ModelTexture(loader.loadTexture("sphereTexture", false));
+		sphereTextureAtlas.setNumberOfRows(2);
+		final TexturedModel playerModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("sphere", loader), sphereTextureAtlas);
+		playerModel.getTexture().setHasTransparency(true);
+		playerModel.getTexture().setUseFakeLighting(true);
 		playerModel.getTexture().setNormalMap(loader.loadTexture("sphereNormal", false));
-		final Player player = new Player(playerModel, new Vector3f(1218, 83, 1133), 0, 0, 0, 0.1f);
+		// player = new Player(playerModel, 0, new Vector3f(1218, 83, 1133), 0,
+		// 0, 0, 0.1f);
+		player = new Player(playerModel, 0, new Vector3f(0, 0, 0), 0, 0, 0, 0.1f);
 		final Camera camera = new Camera(player);
 		final MasterRenderer renderer = new MasterRenderer(loader, camera);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
@@ -182,6 +189,7 @@ public class MainGameLoop {
 		}
 
 		normalMapEntities.add(player);
+		lights.add(player.light);
 		// ****************Game Loop Below*********************
 
 		while(!Display.isCloseRequested()) {

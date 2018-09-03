@@ -16,7 +16,7 @@ import renderEngine.MasterRenderer;
 
 public class SkyboxRenderer {
 
-	public static final float SIZE = 1200f;
+	public static final float SIZE = 1000f;
 
 	/*
 	 * DAY STARTS AT 0 DEGREES, ENDS AT 180, THEN TRANSITION UNTIL 250, NIGHT
@@ -128,6 +128,8 @@ public class SkyboxRenderer {
 			SkyboxRenderer.blendFactor = (time - NIGHT_START) / (NIGHT_END - NIGHT_START);
 			tex1Day = false;
 			tex2Day = false;
+			MainGameLoop.player.setTextureIndex(1);
+			MainGameLoop.player.light.setPosition(new Vector3f(MainGameLoop.player.getPosition().x, MainGameLoop.player.getPosition().y + 10, MainGameLoop.player.getPosition().z));
 		} else if((time >= NIGHT_END) && (time < DAY_TRANSITION_END)) {
 			texture1 = nightTexture;
 			texture2 = dayTexture;
@@ -135,6 +137,7 @@ public class SkyboxRenderer {
 			SkyboxRenderer.blendFactor = (time - NIGHT_END) / (DAY_TRANSITION_END - NIGHT_END);
 			tex1Day = false;
 			tex2Day = true;
+			MainGameLoop.player.light.setPosition(new Vector3f(-MainGameLoop.player.getPosition().x, -MainGameLoop.player.getPosition().y, -MainGameLoop.player.getPosition().z));
 		} else if((time >= DAY_TRANSITION_END) && (time < DAY_END)) {
 			texture1 = dayTexture;
 			texture2 = dayTexture;
@@ -142,6 +145,8 @@ public class SkyboxRenderer {
 			SkyboxRenderer.blendFactor = (time - DAY_TRANSITION_END) / (DAY_END - DAY_TRANSITION_END);
 			tex1Day = true;
 			tex2Day = true;
+			MainGameLoop.player.setTextureIndex(0);
+			MainGameLoop.player.light.setPosition(new Vector3f(-MainGameLoop.player.getPosition().x, -MainGameLoop.player.getPosition().y, -MainGameLoop.player.getPosition().z));
 		} else {
 			texture1 = dayTexture;
 			texture2 = nightTexture;
@@ -149,6 +154,7 @@ public class SkyboxRenderer {
 			SkyboxRenderer.blendFactor = (time - DAY_END) / (DAY_LENGTH - DAY_END);
 			tex1Day = true;
 			tex2Day = false;
+			MainGameLoop.player.light.setPosition(new Vector3f(-MainGameLoop.player.getPosition().x, -MainGameLoop.player.getPosition().y, -MainGameLoop.player.getPosition().z));
 		}
 		Vector3f sunPos = MainGameLoop.sun.getPosition();
 		float sunY = sunPos.y;

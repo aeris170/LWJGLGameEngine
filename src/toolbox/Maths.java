@@ -36,27 +36,40 @@ public class Maths {
 		return matrix;
 	}
 
-	public static Matrix4f createTransformationMatrix(final Vector3f translation, final float rx, final float ry, final float rz, final float scale, Camera camera) {
-		final Matrix4f matrix = new Matrix4f();
+	public static Matrix4f createTransformationMatrix(final Vector3f translation, Vector3f gazeVector, Vector3f perpVector, final Vector3f upVector, final float rx,
+			final float ry, final float rz, final float scale, boolean a) {
+		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
 		Matrix4f.translate(translation, matrix, matrix);
-		Matrix4f rotation = new Matrix4f();
-		rotation.setZero();
-		if(Math.cos(camera.getYaw() * (Math.PI / 180)) >= 0.0f) {
-			rotation.m00 = camera.getPitch();
-			rotation.m01 = (float) (Math.cos(camera.getYaw() * (Math.PI / 180)));
-			rotation.m11 = (float) (-Math.sin(camera.getYaw() * (Math.PI / 180)));
-			rotation.m22 = 1.0f;
-			rotation.m33 = 1.0f;
+
+		System.out.println("\tGAZE: " + gazeVector);
+		System.out.println("\tPERP: " + perpVector);
+		System.out.println("\tUP  : " + upVector);
+		System.out.println(Vector3f.dot(gazeVector, perpVector));
+
+		if(a) {
+			matrix = doRotateSideway(matrix, gazeVector, perpVector, upVector, rx, ry, -rz);
 		} else {
-			rotation.m00 = camera.getPitch();
-			rotation.m01 = (float) (-Math.cos(camera.getYaw() * (Math.PI / 180)));
-			rotation.m11 = (float) (Math.sin(camera.getYaw() * (Math.PI / 180)));
-			rotation.m22 = 1.0f;
-			rotation.m33 = 1.0f;
+			matrix = doRotateForward(matrix, gazeVector, perpVector, upVector, rx, ry, -rz);
 		}
-		Matrix4f.mul(rotation, matrix, matrix);
+
 		Matrix4f.scale(new Vector3f(scale, scale, scale), matrix, matrix);
+		return matrix;
+	}
+
+	private static Matrix4f doRotateForward(Matrix4f matrix, Vector3f gazeVector, Vector3f perpVector, final Vector3f upVector, final float rx,
+			final float ry, final float rz) {
+		Matrix4f.rotate((float) Math.toRadians(rx), perpVector, matrix, matrix);
+		Matrix4f.rotate((float) Math.toRadians(rz), gazeVector, matrix, matrix);
+		Matrix4f.rotate((float) Math.toRadians(ry), upVector, matrix, matrix);
+		return matrix;
+	}
+
+	private static Matrix4f doRotateSideway(Matrix4f matrix, Vector3f gazeVector, Vector3f perpVector, final Vector3f upVector, final float rx,
+			final float ry, final float rz) {
+		Matrix4f.rotate((float) Math.toRadians(rz), gazeVector, matrix, matrix);
+		Matrix4f.rotate((float) Math.toRadians(rx), perpVector, matrix, matrix);
+		Matrix4f.rotate((float) Math.toRadians(ry), upVector, matrix, matrix);
 		return matrix;
 	}
 
@@ -113,6 +126,92 @@ public class Maths {
 		Quaternion quat = new Quaternion();
 		quat.setFromMatrix(matrix);
 		return quat;
+	}
 
+	public static Vector3f rotateAroundXY(final Vector3f zVec, final float rx, final float ry) {
+		Vector3f v = new Vector3f(zVec);
+		float x = v.x;
+		float y = v.y;
+		float z = v.z;
+		float rxRad = (float) Math.toRadians(rx);
+		float ryRad = (float) Math.toRadians(ry);
+		// rotate around x
+		y = (float) (zVec.y * Math.cos(rxRad) - zVec.z * Math.sin(rxRad));
+		z = (float) (zVec.y * Math.sin(rxRad) + zVec.z * Math.cos(rxRad));
+		float zz = z;
+		// rotate around y
+		x = (float) (x * Math.cos(ryRad) + z * Math.sin(ryRad));
+		zz = (float) (x * -Math.sin(ryRad) + z * Math.cos(ryRad));
+		return new Vector3f(x, y, zz);
+	}
+
+	public static Vector3f rotateAroundXZ(final Vector3f yVec, final float rx, final float rz) {
+		Vector3f v = new Vector3f(yVec);
+		float x = v.x;
+		float y = v.y;
+		float z = v.z;
+		float rxRad = (float) Math.toRadians(rx);
+		float rzRad = (float) Math.toRadians(rz);
+		// rotate around x
+		y = (float) (yVec.y * Math.cos(rxRad) - yVec.z * Math.sin(rxRad));
+		z = (float) (yVec.y * Math.sin(rxRad) + yVec.z * Math.cos(rxRad));
+		float yy = y;
+		// rotate around z
+		x = (float) (x * Math.cos(rzRad) - y * Math.sin(rzRad));
+		yy = (float) (x * Math.sin(rzRad) + y * Math.cos(rzRad));
+		return new Vector3f(x, yy, z);
+	}
+
+	public static Vector3f rotateAroundYZ(final Vector3f xVec, final float ry, final float rz) {
+		Vector3f v = new Vector3f(xVec);
+		float x = v.x;
+		float y = v.y;
+		float z = v.z;
+		float ryRad = (float) Math.toRadians(ry);
+		float rzRad = (float) Math.toRadians(rz);
+		// rotate around x
+		x = (float) (xVec.x * Math.cos(ryRad) + xVec.z * Math.sin(ryRad));
+		z = (float) (xVec.x * -Math.sin(ryRad) + xVec.z * Math.cos(ryRad));
+		float xx = x;
+		// rotate around z
+		xx = (float) (x * Math.cos(rzRad) - y * Math.sin(rzRad));
+		y = (float) (x * Math.sin(rzRad) + y * Math.cos(rzRad));
+		return new Vector3f(xx, y, z);
+	}
+
+	public static Vector3f rotateAroundX(final Vector3f vec, final float rx) {
+		Vector3f v = new Vector3f(vec);
+		float x = v.x;
+		float y = v.y;
+		float z = v.z;
+		float rxRad = (float) Math.toRadians(rx);
+		// rotate around x
+		y = (float) (vec.y * Math.cos(rxRad) - vec.z * Math.sin(rxRad));
+		z = (float) (vec.y * Math.sin(rxRad) + vec.z * Math.cos(rxRad));
+		return new Vector3f(x, y, z);
+	}
+
+	public static Vector3f rotateAroundY(final Vector3f vec, final float ry) {
+		Vector3f v = new Vector3f(vec);
+		float x = v.x;
+		float y = v.y;
+		float z = v.z;
+		float ryRad = (float) Math.toRadians(ry);
+		// rotate around y
+		x = (float) (vec.x * Math.cos(ryRad) + vec.z * Math.sin(ryRad));
+		z = (float) (vec.x * -Math.sin(ryRad) + vec.z * Math.cos(ryRad));
+		return new Vector3f(x, y, z);
+	}
+
+	private static Vector3f rotateAroundZ(Vector3f vec, float rz) {
+		Vector3f v = new Vector3f(vec);
+		float x = v.x;
+		float y = v.y;
+		float z = v.z;
+		float rzRad = (float) Math.toRadians(rz);
+		// rotate around z
+		x = (float) (vec.x * Math.cos(rzRad) - vec.y * Math.sin(rzRad));
+		y = (float) (vec.x * Math.sin(rzRad) + vec.y * Math.cos(rzRad));
+		return new Vector3f(x, y, z);
 	}
 }

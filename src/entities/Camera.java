@@ -80,23 +80,20 @@ public class Camera {
 
 	private void calculatePitch() {
 		final float pitchChange = Mouse.getDY() * 0.1f;
+		float newPitch = pitch - pitchChange;
 		if(isMouseLookEnabled) {
-			if(pitch < 90 && pitch > -90) {
-				pitch -= pitchChange;
-			} else if(pitch <= 89.9f) {
-				pitch += 0.1f;
-			} else if(pitch >= -89.9f) {
-				pitch -= 0.1f;
+			if(newPitch <= 90 && newPitch >= -90) {
+				pitch = newPitch;
 			}
 		} else {
 			if(Mouse.isButtonDown(1)) {
-				pitch -= pitchChange;
+				pitch = newPitch;
 			}
 		}
 	}
 
 	private void calculateAngleAroundPlayer() {
-		final float angleChange = Mouse.getDX() * 0.3f;
+		final float angleChange = Mouse.getDX() * 0.1f;
 		if(isMouseLookEnabled) {
 			angleAroundPlayer -= angleChange;
 			if(angleChange != 0) {
