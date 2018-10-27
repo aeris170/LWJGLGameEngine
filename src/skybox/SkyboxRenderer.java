@@ -81,7 +81,7 @@ public class SkyboxRenderer {
 	private int dayTexture;
 	private int nightTexture;
 	private SkyboxShader shader;
-	private float time = DAY_TRANSITION_END;
+	private float time = 0;
 
 	private double angle;
 
@@ -117,7 +117,7 @@ public class SkyboxRenderer {
 		boolean tex1Day;
 		boolean tex2Day;
 		float delta = DisplayManager.getFrameTimeSeconds() * 100;
-		time += delta;
+		// time += delta;
 		time %= DAY_LENGTH;
 		int texture1;
 		int texture2;
@@ -128,7 +128,7 @@ public class SkyboxRenderer {
 			SkyboxRenderer.blendFactor = (time - NIGHT_START) / (NIGHT_END - NIGHT_START);
 			tex1Day = false;
 			tex2Day = false;
-			MainGameLoop.player.setTextureIndex(1);
+			// MainGameLoop.player.setTextureIndex(1);
 			MainGameLoop.player.light.setPosition(new Vector3f(MainGameLoop.player.getPosition().x, MainGameLoop.player.getPosition().y + 10, MainGameLoop.player.getPosition().z));
 		} else if((time >= NIGHT_END) && (time < DAY_TRANSITION_END)) {
 			texture1 = nightTexture;
@@ -156,21 +156,21 @@ public class SkyboxRenderer {
 			tex2Day = false;
 			MainGameLoop.player.light.setPosition(new Vector3f(-MainGameLoop.player.getPosition().x, -MainGameLoop.player.getPosition().y, -MainGameLoop.player.getPosition().z));
 		}
-		Vector3f sunPos = MainGameLoop.sun.getPosition();
-		float sunY = sunPos.y;
-		float sunXZ = sunPos.z;
-		double theta = (360.0 * delta) / DAY_LENGTH;
-		double thetaRadians = Math.toRadians(theta);
-		sunY = (float) (sunY * Math.cos(thetaRadians) - sunXZ * Math.sin(thetaRadians));
-		sunXZ = (float) (sunY * Math.sin(thetaRadians) + sunXZ * Math.cos(thetaRadians));
-		MainGameLoop.sun.setPosition(new Vector3f(sunXZ, sunY, sunXZ));
+		/*
+		 * Vector3f sunPos = MainGameLoop.sun.getPosition(); float sunY =
+		 * sunPos.y; float sunXZ = sunPos.z; double theta = (360.0 * delta) /
+		 * DAY_LENGTH; double thetaRadians = Math.toRadians(theta); sunY =
+		 * (float) (sunY * Math.cos(thetaRadians) - sunXZ *
+		 * Math.sin(thetaRadians)); sunXZ = (float) (sunY *
+		 * Math.sin(thetaRadians) + sunXZ * Math.cos(thetaRadians));
+		 * MainGameLoop.sun.setPosition(new Vector3f(sunXZ, sunY, sunXZ));
+		 */
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture1);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture2);
 		shader.loadBlendFactor(SkyboxRenderer.blendFactor);
-		angle += theta;
-		// System.out.println(angle);
+		// angle += theta;
 		return new boolean[] {tex1Day, tex2Day};
 	}
 }

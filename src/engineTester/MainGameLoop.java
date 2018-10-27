@@ -188,8 +188,9 @@ public class MainGameLoop {
 			}
 		}
 
+		sun.setPosition(new Vector3f(339868.97f, -933593.25f, 339868.97f));
 		normalMapEntities.add(player);
-		lights.add(player.light);
+		// lights.add(player.light);
 		// ****************Game Loop Below*********************
 
 		while(!Display.isCloseRequested()) {
@@ -219,8 +220,8 @@ public class MainGameLoop {
 			buffers.unbindCurrentFrameBuffer();
 			boolean[] texDays = renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, -1, 0, 100000), grassTexture.getID(),
 					mudTexture.getID());
-			waterRenderer.render(waters, camera, sun);
-			lavaRenderer.render(lavas, camera, sun, texDays);
+			waterRenderer.render(lavas, camera, sun);
+			// lavaRenderer.render(lavas, camera, sun, texDays);
 			ParticleMaster.renderParticles(camera);
 			guiRenderer.render(guiTextures);
 			TextMaster.render();

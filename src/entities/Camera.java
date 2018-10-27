@@ -3,6 +3,8 @@ package entities;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
+import toolbox.Maths;
+
 public class Camera {
 
 	public static Camera Instance;
@@ -18,8 +20,10 @@ public class Camera {
 
 	private Player player;
 
-	public Camera(final Player player) {
-		this.player = player;
+	private Vector3f gaze = new Vector3f(0, 0, 1);
+
+	public Camera(final Player player2) {
+		this.player = player2;
 		Instance = this;
 	}
 
@@ -96,10 +100,7 @@ public class Camera {
 		final float angleChange = Mouse.getDX() * 0.1f;
 		if(isMouseLookEnabled) {
 			angleAroundPlayer -= angleChange;
-			if(angleChange != 0) {
-				player.increaseRotation(0, angleAroundPlayer, 0);
-			}
-			angleAroundPlayer = 0;
+			gaze = Maths.rotateAroundY(gaze, -angleChange);
 		} else {
 			if(Mouse.isButtonDown(0)) {
 				angleAroundPlayer -= angleChange;
@@ -109,5 +110,9 @@ public class Camera {
 
 	public void invertPitch() {
 		pitch *= -1;
+	}
+
+	public Vector3f getGazeVector() {
+		return gaze;
 	}
 }

@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import entities.Entity;
 import entities.Player;
@@ -35,17 +36,12 @@ public class NormalMappingRenderer {
 			final List<Entity> batch = entities.get(model);
 			for(final Entity entity : batch) {
 				if(entity instanceof Player) {
-					Matrix4f transformationMatrix = null;
-					if(((Player) entity).flagS == 1 || ((Player) entity).flagS + ((Player) entity).flagF == 2) {
-						transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
-								((Player) entity).getGazeVector(),
-								((Player) entity).getPerpVector(), ((Player) entity).getUpVector(), entity.getRotX(), entity.getRotY(), entity.getRotZ(),
-								entity.getScale(), true);
-					} else {
-						transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), ((Player) entity).getGazeVector(),
-								((Player) entity).getPerpVector(), ((Player) entity).getUpVector(), entity.getRotX(), entity.getRotY(), entity.getRotZ(),
-								entity.getScale(), false);
-					}
+					Vector3f rotationAxis = (Vector3f) (new Vector3f(((Player) entity).getVelocityVector().z,
+							((Player) entity).getVelocityVector().y, ((Player) entity).getVelocityVector().x).normalise());
+					Vector3f.cross(rotationAxis, ((Player) entity).getUpVector(), rotationAxis);
+					Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
+							Maths.createQuaternion(((Player) entity).getCurrentRotation(), rotationAxis),
+							Maths.createQuaternion(entity.getRotY(), ((Player) entity).getUpVector()), entity.getScale());
 					shader.loadTransformationMatrix(transformationMatrix);
 					shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 				} else {

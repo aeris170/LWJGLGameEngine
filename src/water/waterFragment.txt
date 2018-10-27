@@ -67,6 +67,6 @@ void main(void) {
 	out_Color = mix(reflectionColor, refractionColor, mixAmount);
 	out_Color = mix(out_Color, vec4(0.0, 0.3, 0.5, 1.0), 0.2) + vec4(specularHighlights, 0.0);
 	out_Color.a = clamp(waterDepth / 5.0, 0.0, 1.0);
-	//out_Color.rg = normalMapColor.yz; //acid!
-	//out_Color.br = normalMapColor.zy; //mb mana?
+	//out_Color.rg = normalMapColor.yz; //acid water :D!
+	//out_Color.br = normalMapColor.zy; //mavi su, mana pool???
 }

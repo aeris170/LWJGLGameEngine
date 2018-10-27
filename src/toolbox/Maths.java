@@ -9,6 +9,10 @@ import entities.Camera;
 
 public class Maths {
 
+	public static float clamp(float val, float min, float max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
 	public static float barryCentric(final Vector3f p1, final Vector3f p2, final Vector3f p3, final Vector2f pos) {
 		final float det = ((p2.z - p3.z) * (p1.x - p3.x)) + ((p3.x - p2.x) * (p1.z - p3.z));
 		final float l1 = (((p2.z - p3.z) * (pos.x - p3.x)) + ((p3.x - p2.x) * (pos.y - p3.z))) / det;
@@ -25,7 +29,8 @@ public class Maths {
 		return matrix;
 	}
 
-	public static Matrix4f createTransformationMatrix(final Vector3f translation, final float rx, final float ry, final float rz, final float scale) {
+	public static Matrix4f createTransformationMatrix(final Vector3f translation, final float rx, final float ry,
+			final float rz, final float scale) {
 		final Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
 		Matrix4f.translate(translation, matrix, matrix);
@@ -36,48 +41,12 @@ public class Maths {
 		return matrix;
 	}
 
-	public static Matrix4f createTransformationMatrix(final Vector3f translation, Vector3f gazeVector, Vector3f perpVector, final Vector3f upVector, final float rx,
-			final float ry, final float rz, final float scale, boolean a) {
+	public static Matrix4f createTransformationMatrix(Vector3f translation, Quaternion xRotation, Quaternion yRotation, float scale) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
 		Matrix4f.translate(translation, matrix, matrix);
-
-		System.out.println("\tGAZE: " + gazeVector);
-		System.out.println("\tPERP: " + perpVector);
-		System.out.println("\tUP  : " + upVector);
-		System.out.println(Vector3f.dot(gazeVector, perpVector));
-
-		if(a) {
-			matrix = doRotateSideway(matrix, gazeVector, perpVector, upVector, rx, ry, -rz);
-		} else {
-			matrix = doRotateForward(matrix, gazeVector, perpVector, upVector, rx, ry, -rz);
-		}
-
-		Matrix4f.scale(new Vector3f(scale, scale, scale), matrix, matrix);
-		return matrix;
-	}
-
-	private static Matrix4f doRotateForward(Matrix4f matrix, Vector3f gazeVector, Vector3f perpVector, final Vector3f upVector, final float rx,
-			final float ry, final float rz) {
-		Matrix4f.rotate((float) Math.toRadians(rx), perpVector, matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rz), gazeVector, matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(ry), upVector, matrix, matrix);
-		return matrix;
-	}
-
-	private static Matrix4f doRotateSideway(Matrix4f matrix, Vector3f gazeVector, Vector3f perpVector, final Vector3f upVector, final float rx,
-			final float ry, final float rz) {
-		Matrix4f.rotate((float) Math.toRadians(rz), gazeVector, matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rx), perpVector, matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(ry), upVector, matrix, matrix);
-		return matrix;
-	}
-
-	public static Matrix4f createTransformationMatrix(Vector3f translation, Quaternion rotation, float scale) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(translation, matrix, matrix);
-		Matrix4f.mul(matrix, convertQuaternionToMatrix4f(rotation), matrix);
+		Matrix4f.mul(matrix, convertQuaternionToMatrix4f(xRotation), matrix);
+		Matrix4f.mul(matrix, convertQuaternionToMatrix4f(yRotation), matrix);
 		Matrix4f.scale(new Vector3f(scale, scale, scale), matrix, matrix);
 		return matrix;
 	}
@@ -93,39 +62,45 @@ public class Maths {
 		return viewMatrix;
 	}
 
-	private static Matrix4f convertQuaternionToMatrix4f(Quaternion q) {
+	public static Quaternion createQuaternion(float angle, Vector3f axis) {
+		return new Quaternion(((float) (Math.cos(Math.toRadians(angle / 2)))), ((float) (Math.sin(Math.toRadians(angle / 2)) * axis.x)),
+				((float) (Math.sin(Math.toRadians(angle / 2)) * axis.y)), ((float) (Math.sin(Math.toRadians(angle / 2)) * axis.z)));
+	}
+
+	public static Matrix4f convertQuaternionToMatrix4f(Quaternion q) {
+		double sqw = q.w * q.w;
+		double sqx = q.x * q.x;
+		double sqy = q.y * q.y;
+		double sqz = q.z * q.z;
+
 		Matrix4f matrix = new Matrix4f();
 
-		matrix.m00 = 1.0f - 2.0f * (q.getY() * q.getY() + q.getZ() * q.getZ());
-		matrix.m01 = 2.0f * (q.getX() * q.getY() + q.getZ() * q.getW());
-		matrix.m02 = 2.0f * (q.getX() * q.getZ() - q.getY() * q.getW());
-		matrix.m03 = 0.0f;
+		// invs (inverse square length) is only required if quaternion is not
+		// already normalised
+		double invs = 1 / (sqx + sqy + sqz + sqw);
+		// since sqw + sqx + sqy + sqz = 1 / invs * invs
+		matrix.m00 = (float) ((sqx - sqy - sqz + sqw) * invs);
+		matrix.m11 = (float) ((-sqx + sqy - sqz + sqw) * invs);
+		matrix.m22 = (float) ((-sqx - sqy + sqz + sqw) * invs);
 
-		// Second row
-		matrix.m10 = 2.0f * (q.getX() * q.getY() - q.getZ() * q.getW());
-		matrix.m11 = 1.0f - 2.0f * (q.getX() * q.getX() + q.getZ() * q.getZ());
-		matrix.m12 = 2.0f * (q.getZ() * q.getY() + q.getX() * q.getW());
-		matrix.m13 = 0.0f;
+		double tmp1 = q.x * q.y;
+		double tmp2 = q.z * q.w;
+		matrix.m10 = (float) (2.0 * (tmp1 + tmp2) * invs);
+		matrix.m01 = (float) (2.0 * (tmp1 - tmp2) * invs);
 
-		// Third row
-		matrix.m20 = 2.0f * (q.getX() * q.getZ() + q.getY() * q.getW());
-		matrix.m21 = 2.0f * (q.getY() * q.getZ() - q.getX() * q.getW());
-		matrix.m22 = 1.0f - 2.0f * (q.getX() * q.getX() + q.getY() * q.getY());
-		matrix.m23 = 0.0f;
-
-		// Fourth row
-		matrix.m30 = 0;
-		matrix.m31 = 0;
-		matrix.m32 = 0;
-		matrix.m33 = 1.0f;
-
+		tmp1 = q.x * q.z;
+		tmp2 = q.y * q.w;
+		matrix.m20 = (float) (2.0 * (tmp1 - tmp2) * invs);
+		matrix.m02 = (float) (2.0 * (tmp1 + tmp2) * invs);
+		tmp1 = q.y * q.z;
+		tmp2 = q.x * q.w;
+		matrix.m21 = (float) (2.0 * (tmp1 + tmp2) * invs);
+		matrix.m12 = (float) (2.0 * (tmp1 - tmp2) * invs);
 		return matrix;
 	}
 
 	public static Quaternion convertMatrix4fToQuaternion(Matrix4f matrix) {
-		Quaternion quat = new Quaternion();
-		quat.setFromMatrix(matrix);
-		return quat;
+		return null;
 	}
 
 	public static Vector3f rotateAroundXY(final Vector3f zVec, final float rx, final float ry) {
