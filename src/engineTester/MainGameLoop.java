@@ -59,7 +59,7 @@ public class MainGameLoop {
 		playerModel.getTexture().setNormalMap(loader.loadTexture("sphereNormal", false));
 		// player = new Player(playerModel, 0, new Vector3f(1218, 83, 1133), 0,
 		// 0, 0, 0.1f);
-		player = new Player(playerModel, 0, new Vector3f(0, 0, 0), 0, 0, 0, 0.1f);
+		player = new Player(playerModel, 0, new Vector3f(1000, 0, 1000), 0, 0, 0, 0.1f);
 		final Camera camera = new Camera(player);
 		final MasterRenderer renderer = new MasterRenderer(loader, camera);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());

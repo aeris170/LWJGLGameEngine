@@ -62,7 +62,7 @@ public class Maths {
 		return viewMatrix;
 	}
 
-	public static Quaternion createQuaternion(float angle, Vector3f axis) {
+	public static Quaternion createRotationQuaternion(float angle, Vector3f axis) {
 		return new Quaternion(((float) (Math.cos(Math.toRadians(angle / 2)))), ((float) (Math.sin(Math.toRadians(angle / 2)) * axis.x)),
 				((float) (Math.sin(Math.toRadians(angle / 2)) * axis.y)), ((float) (Math.sin(Math.toRadians(angle / 2)) * axis.z)));
 	}

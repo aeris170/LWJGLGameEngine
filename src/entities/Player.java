@@ -27,9 +27,9 @@ public class Player extends Entity {
 	private boolean airborne = false;
 	public Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), new Vector3f(1, 0.001f, 0.0002f));
 
-	public Player(final TexturedModel model, int i, final Vector3f position, final float rotX, final float rotY,
+	public Player(final TexturedModel model, int textureIndex, final Vector3f position, final float rotX, final float rotY,
 			final float rotZ, final float scale) {
-		super(model, i, position, rotX, rotY, rotZ, scale);
+		super(model, textureIndex, position, rotX, rotY, rotZ, scale);
 	}
 
 	public void move(final List<Terrain> terrains) {
@@ -76,6 +76,10 @@ public class Player extends Entity {
 	}
 
 	private void catchEvents() {
+		if(Keyboard.isKeyDown(Keyboard.KEY_O)) {
+			System.out.println(getPosition());
+		}
+
 		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 			jump();
 		}
@@ -126,7 +130,6 @@ public class Player extends Entity {
 		Vector3f compositeVector = new Vector3f();
 		Vector3f.add(forwardVector, sidewaysVector, compositeVector);
 		compositeVector.normalise();
-		System.out.println(compositeVector);
 		Vector3f.add(velocityVector, compositeVector, velocityVector);
 		if(velocityVector.lengthSquared() > 400.0f) {
 			velocityVector.scale(400.0f / velocityVector.lengthSquared());

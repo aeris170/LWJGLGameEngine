@@ -40,8 +40,8 @@ public class NormalMappingRenderer {
 							((Player) entity).getVelocityVector().y, ((Player) entity).getVelocityVector().x).normalise());
 					Vector3f.cross(rotationAxis, ((Player) entity).getUpVector(), rotationAxis);
 					Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
-							Maths.createQuaternion(((Player) entity).getCurrentRotation(), rotationAxis),
-							Maths.createQuaternion(entity.getRotY(), ((Player) entity).getUpVector()), entity.getScale());
+							Maths.createRotationQuaternion(((Player) entity).getCurrentRotation(), rotationAxis),
+							Maths.createRotationQuaternion(entity.getRotY(), ((Player) entity).getUpVector()), entity.getScale());
 					shader.loadTransformationMatrix(transformationMatrix);
 					shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 				} else {
