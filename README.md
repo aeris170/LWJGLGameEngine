@@ -2,9 +2,5 @@
 OpenGL playground for me. Having fun in my spare time!
 
 ## Screenshots:
-![day][1]
-![night][2]
-
-
-[1]: https://github.com/aeris170/LWJGLGameEngine/tree/master/art/day.png "Day View"
-[2]: https://github.com/aeris170/LWJGLGameEngine/tree/master/art/night.png "Night View"
+![day](https://user-images.githubusercontent.com/25724155/54485426-3cd7b600-4889-11e9-9572-516396ec5462.png)
+![night](https://user-images.githubusercontent.com/25724155/54485427-406b3d00-4889-11e9-8d73-85345291ef85.png)
