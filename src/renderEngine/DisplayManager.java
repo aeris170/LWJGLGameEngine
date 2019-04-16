@@ -14,7 +14,7 @@ public class DisplayManager {
 
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
-	public static final int FPS_CAP = 30;
+	public static final int FPS_CAP = 60;
 
 	private static long lastTime;
 	private static float delta;
@@ -26,7 +26,7 @@ public class DisplayManager {
 	public static void init() {
 		final ContextAttribs attribs = new ContextAttribs(3, 3).withForwardCompatible(true).withProfileCore(true);
 		try {
-			if(isFullScreen) {
+			if (isFullScreen) {
 				Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
 			} else {
 				Display.setDisplayMode(new DisplayMode(DisplayManager.WIDTH, DisplayManager.HEIGHT));
@@ -35,7 +35,7 @@ public class DisplayManager {
 			Display.setTitle("OpenGL Frame");
 			Mouse.setGrabbed(true);
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
-		} catch(final LWJGLException ex) {
+		} catch (final LWJGLException ex) {
 			ex.printStackTrace();
 		}
 		GL11.glViewport(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT);
@@ -69,7 +69,7 @@ public class DisplayManager {
 
 	public static void updateFPS() {
 		fpsCounter++;
-		if(currentTime() - lastFPS > 1000) {
+		if (currentTime() - lastFPS > 1000) {
 			fps = fpsCounter;
 			fpsCounter = 0;
 			lastFPS += 1000;
