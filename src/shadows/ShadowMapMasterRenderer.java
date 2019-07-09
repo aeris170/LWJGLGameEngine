@@ -13,7 +13,6 @@ import entities.Entity;
 import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
-import renderEngine.MasterRenderer;
 import terrains.Terrain;
 
 /**
@@ -39,10 +38,10 @@ public class ShadowMapMasterRenderer {
 	private ShadowMapEntityRenderer entityRenderer;
 
 	/**
-	 * Creates instances of the important objects needed for rendering the scene
-	 * to the shadow map. This includes the {@link ShadowBox} which calculates
-	 * the position and size of the "view cuboid", the simple renderer and
-	 * shader program that are used to render objects to the shadow map, and the
+	 * Creates instances of the important objects needed for rendering the scene to
+	 * the shadow map. This includes the {@link ShadowBox} which calculates the
+	 * position and size of the "view cuboid", the simple renderer and shader
+	 * program that are used to render objects to the shadow map, and the
 	 * {@link ShadowFrameBuffer} to which the scene is rendered. The size of the
 	 * shadow map is determined here.
 	 *
@@ -56,42 +55,39 @@ public class ShadowMapMasterRenderer {
 	}
 
 	/**
-	 * Carries out the shadow render pass. This renders the entities to the
-	 * shadow map. First the shadow box is updated to calculate the size and
-	 * position of the "view cuboid". The light direction is assumed to be
-	 * "-lightPosition" which will be fairly accurate assuming that the light is
-	 * very far from the scene. It then prepares to render, renders the entities
-	 * to the shadow map, and finishes rendering.
+	 * Carries out the shadow render pass. This renders the entities to the shadow
+	 * map. First the shadow box is updated to calculate the size and position of
+	 * the "view cuboid". The light direction is assumed to be "-lightPosition"
+	 * which will be fairly accurate assuming that the light is very far from the
+	 * scene. It then prepares to render, renders the entities to the shadow map,
+	 * and finishes rendering.
 	 *
 	 * @param entities - the lists of entities to be rendered. Each list is
-	 *                 associated with the {@link TexturedModel} that all of the
-	 *                 entities in that list use.
-	 * @param sun      - the light acting as the sun in the scene.
+	 *        associated with the {@link TexturedModel} that all of the entities in
+	 *        that list use.
+	 * @param sun - the light acting as the sun in the scene.
 	 */
 	public void render(final Map<RawModel, List<Terrain>> terrains, final Map<TexturedModel, List<Entity>> entities,
-			final Map<TexturedModel, List<Entity>> normalMapEntities,
-			final Light sun) {
+	        final Map<TexturedModel, List<Entity>> normalMapEntities, final Light sun)
+	{
 		shadowBox.update();
 		final Vector3f sunPosition = sun.getPosition();
 		final Vector3f lightDirection = new Vector3f(-sunPosition.x, -sunPosition.y, -sunPosition.z);
 		prepare(lightDirection, shadowBox);
-		MasterRenderer.enableCulling();
-		GL11.glCullFace(GL11.GL_FRONT);
 		// TODO FIXX FLYING SHADOWS
-		// if(sun.getPosition().y > 200) {
+		// if (sun.getPosition().y > 200000) {
 		// entityRenderer.renderTerrain(terrains);
-		entityRenderer.render(entities);
-		entityRenderer.render(normalMapEntities);
+		// entityRenderer.render(entities);
+		// entityRenderer.render(normalMapEntities);
 		// }
-		MasterRenderer.disableCulling();
 		finish();
 	}
 
 	/**
-	 * This biased projection-view matrix is used to convert fragments into
-	 * "shadow map space" when rendering the main render pass. It converts a
-	 * world space position into a 2D coordinate on the shadow map. This is
-	 * needed for the second part of shadow mapping.
+	 * This biased projection-view matrix is used to convert fragments into "shadow
+	 * map space" when rendering the main render pass. It converts a world space
+	 * position into a 2D coordinate on the shadow map. This is needed for the
+	 * second part of shadow mapping.
 	 *
 	 * @return The to-shadow-map-space matrix.
 	 */
@@ -108,9 +104,8 @@ public class ShadowMapMasterRenderer {
 	}
 
 	/**
-	 * @return The ID of the shadow map texture. The ID will always stay the
-	 *         same, even when the contents of the shadow map texture change
-	 *         each frame.
+	 * @return The ID of the shadow map texture. The ID will always stay the same,
+	 *         even when the contents of the shadow map texture change each frame.
 	 */
 	public int getShadowMap() {
 		return shadowFbo.getShadowMap();
@@ -124,23 +119,21 @@ public class ShadowMapMasterRenderer {
 	}
 
 	/**
-	 * Prepare for the shadow render pass. This first updates the dimensions of
-	 * the orthographic "view cuboid" based on the information that was
-	 * calculated in the {@link SHadowBox} class. The light's "view" matrix is
-	 * also calculated based on the light's direction and the center position of
-	 * the "view cuboid" which was also calculated in the {@link ShadowBox}
-	 * class. These two matrices are multiplied together to create the
-	 * projection-view matrix. This matrix determines the size, position, and
-	 * orientation of the "view cuboid" in the world. This method also binds the
-	 * shadows FBO so that everything rendered after this gets rendered to the
-	 * FBO. It also enables depth testing, and clears any data that is in the
-	 * FBOs depth attachment from last frame. The simple shader program is also
-	 * started.
+	 * Prepare for the shadow render pass. This first updates the dimensions of the
+	 * orthographic "view cuboid" based on the information that was calculated in
+	 * the {@link SHadowBox} class. The light's "view" matrix is also calculated
+	 * based on the light's direction and the center position of the "view cuboid"
+	 * which was also calculated in the {@link ShadowBox} class. These two matrices
+	 * are multiplied together to create the projection-view matrix. This matrix
+	 * determines the size, position, and orientation of the "view cuboid" in the
+	 * world. This method also binds the shadows FBO so that everything rendered
+	 * after this gets rendered to the FBO. It also enables depth testing, and
+	 * clears any data that is in the FBOs depth attachment from last frame. The
+	 * simple shader program is also started.
 	 *
-	 * @param lightDirection - the direction of the light rays coming from the
-	 *                       sun.
-	 * @param box            - the shadow box, which contains all the info about
-	 *                       the "view cuboid".
+	 * @param lightDirection - the direction of the light rays coming from the sun.
+	 * @param box - the shadow box, which contains all the info about the "view
+	 *        cuboid".
 	 */
 	private void prepare(final Vector3f lightDirection, final ShadowBox box) {
 		updateOrthoProjectionMatrix(box.getWidth(), box.getHeight(), box.getLength());
@@ -153,9 +146,9 @@ public class ShadowMapMasterRenderer {
 	}
 
 	/**
-	 * Finish the shadow render pass. Stops the shader and unbinds the shadow
-	 * FBO, so everything rendered after this point is rendered to the screen,
-	 * rather than to the shadow FBO.
+	 * Finish the shadow render pass. Stops the shader and unbinds the shadow FBO,
+	 * so everything rendered after this point is rendered to the screen, rather
+	 * than to the shadow FBO.
 	 */
 	private void finish() {
 		shader.stop();
@@ -163,16 +156,16 @@ public class ShadowMapMasterRenderer {
 	}
 
 	/**
-	 * Updates the "view" matrix of the light. This creates a view matrix which
-	 * will line up the direction of the "view cuboid" with the direction of the
-	 * light. The light itself has no position, so the "view" matrix is centered
-	 * at the center of the "view cuboid". The created view matrix determines
-	 * where and how the "view cuboid" is positioned in the world. The size of
-	 * the view cuboid, however, is determined by the projection matrix.
+	 * Updates the "view" matrix of the light. This creates a view matrix which will
+	 * line up the direction of the "view cuboid" with the direction of the light.
+	 * The light itself has no position, so the "view" matrix is centered at the
+	 * center of the "view cuboid". The created view matrix determines where and how
+	 * the "view cuboid" is positioned in the world. The size of the view cuboid,
+	 * however, is determined by the projection matrix.
 	 *
-	 * @param direction - the light direction, and therefore the direction that
-	 *                  the "view cuboid" should be pointing.
-	 * @param center    - the center of the "view cuboid" in world space.
+	 * @param direction - the light direction, and therefore the direction that the
+	 *        "view cuboid" should be pointing.
+	 * @param center - the center of the "view cuboid" in world space.
 	 */
 	private void updateLightViewMatrix(final Vector3f direction, final Vector3f center) {
 		direction.normalise();
@@ -182,17 +175,16 @@ public class ShadowMapMasterRenderer {
 		Matrix4f.rotate(pitch, new Vector3f(1, 0, 0), lightViewMatrix, lightViewMatrix);
 		float yaw = (float) Math.toDegrees(((float) Math.atan(direction.x / direction.z)));
 		yaw = direction.z > 0 ? yaw - 180 : yaw;
-		Matrix4f.rotate((float) -Math.toRadians(yaw), new Vector3f(0, 1, 0), lightViewMatrix,
-				lightViewMatrix);
+		Matrix4f.rotate((float) -Math.toRadians(yaw), new Vector3f(0, 1, 0), lightViewMatrix, lightViewMatrix);
 		Matrix4f.translate(center, lightViewMatrix, lightViewMatrix);
 	}
 
 	/**
-	 * Creates the orthographic projection matrix. This projection matrix
-	 * basically sets the width, length and height of the "view cuboid", based
-	 * on the values that were calculated in the {@link ShadowBox} class.
+	 * Creates the orthographic projection matrix. This projection matrix basically
+	 * sets the width, length and height of the "view cuboid", based on the values
+	 * that were calculated in the {@link ShadowBox} class.
 	 *
-	 * @param width  - shadow box width.
+	 * @param width - shadow box width.
 	 * @param height - shadow box height.
 	 * @param length - shadow box length.
 	 */

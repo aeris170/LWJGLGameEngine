@@ -83,15 +83,13 @@ public class MainGameLoop {
 		final TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path", true));
 		final TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", false));
 
-		final TerrainTexturePack texturePackForest = new TerrainTexturePack(backgroundTexture, rTexture,
-				gTexture, bTexture);
+		final TerrainTexturePack texturePackForest = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 
 		final TerrainTexture backgroundTextureLava = new TerrainTexture(loader.loadTexture("goldyMountain", true));
 		final TerrainTexture rTextureLava = new TerrainTexture(loader.loadTexture("stoneFloor", true));
 		final TerrainTexture gTextureLava = new TerrainTexture(loader.loadTexture("grassyMountain", true));
 		final TerrainTexture bTextureLava = new TerrainTexture(loader.loadTexture("path", true));
-		final TerrainTexturePack texturePackLava = new TerrainTexturePack(backgroundTextureLava, rTextureLava,
-				gTextureLava, bTextureLava);
+		final TerrainTexturePack texturePackLava = new TerrainTexturePack(backgroundTextureLava, rTextureLava, gTextureLava, bTextureLava);
 
 		// *****************************************
 
@@ -101,11 +99,9 @@ public class MainGameLoop {
 		final ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern", true));
 		fernTextureAtlas.setNumberOfRows(2);
 
-		final TexturedModel fern = new TexturedModel(OBJFileLoader.loadOBJ("fern", loader),
-				fernTextureAtlas);
+		final TexturedModel fern = new TexturedModel(OBJFileLoader.loadOBJ("fern", loader), fernTextureAtlas);
 
-		final TexturedModel bobble = new TexturedModel(OBJFileLoader.loadOBJ("pine", loader),
-				new ModelTexture(loader.loadTexture("pine", true)));
+		final TexturedModel bobble = new TexturedModel(OBJFileLoader.loadOBJ("pine", loader), new ModelTexture(loader.loadTexture("pine", true)));
 		bobble.getTexture().setHasTransparency(true);
 
 		fern.getTexture().setHasTransparency(true);
@@ -115,8 +111,7 @@ public class MainGameLoop {
 		final List<Terrain> terrains = new ArrayList<>();
 		terrains.add(terrain);
 
-		final TexturedModel lamp = new TexturedModel(OBJLoader.loadOBJModel("lamp", loader),
-				new ModelTexture(loader.loadTexture("lamp", true)));
+		final TexturedModel lamp = new TexturedModel(OBJLoader.loadOBJModel("lamp", loader), new ModelTexture(loader.loadTexture("lamp", true)));
 		lamp.getTexture().setUseFakeLighting(true);
 
 		final List<Entity> entities = new ArrayList<>();
@@ -124,8 +119,7 @@ public class MainGameLoop {
 
 		// ******************NORMAL MAP MODELS************************
 
-		final TexturedModel boulderModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("boulder", loader),
-				new ModelTexture(loader.loadTexture("boulder", false)));
+		final TexturedModel boulderModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("boulder", loader), new ModelTexture(loader.loadTexture("boulder", false)));
 		boulderModel.getTexture().setNormalMap(loader.loadTexture("boulderNormal", false));
 		boulderModel.getTexture().setShineDamper(10);
 		boulderModel.getTexture().setReflectivity(0.5f);
@@ -133,28 +127,25 @@ public class MainGameLoop {
 		// ************ENTITIES*******************
 
 		final Random random = new Random(5666778);
-		for(int j = 0; j < 6000; j++) {
+		for (int j = 0; j < 6000; j++) {
 			final float terrainSize = terrain.getSize();
 			final float x = random.nextFloat() * terrainSize;
 			final float z = random.nextFloat() * terrainSize;
 			final float y = terrain.getHeightOfTerrain(x, z);
-			if((j % 2) == 0) {
-				if(y > -10) {
+			if ((j % 2) == 0) {
+				if (y > -10) {
 					final float rotX = random.nextFloat() * 180;
 					final float rotZ = random.nextFloat() * 180;
-					if(((rotX > 45) && (rotX < 135)) || ((rotZ > 45) && (rotZ < 135))) {
-						normalMapEntities.add(new Entity(boulderModel, 1, new Vector3f(x, y - 2, z), rotX, random.nextFloat() * 360, rotZ,
-								(random.nextFloat() * 0.6f) + 0.8f));
+					if (((rotX > 45) && (rotX < 135)) || ((rotZ > 45) && (rotZ < 135))) {
+						normalMapEntities
+						        .add(new Entity(boulderModel, 1, new Vector3f(x, y - 2, z), rotX, random.nextFloat() * 360, rotZ, (random.nextFloat() * 0.6f) + 0.8f));
 					}
 				}
-			} else if((j % 3) == 0) {
+			} else if ((j % 3) == 0) {
 				entities.add(new Entity(fern, 1, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 0.9f));
-			} /*
-				 * else if((j % 2) == 0) { if(y > 0) { entities.add(new
-				 * Entity(bobble, 1, new Vector3f(x, y, z), 0,
-				 * random.nextFloat() * 360, 0, (random.nextFloat() * 0.6f) +
-				 * 2.3f)); } }
-				 */
+			} /* else if((j % 2) == 0) { if(y > 0) { entities.add(new Entity(bobble, 1, new
+			   * Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, (random.nextFloat() *
+			   * 0.6f) + 2.3f)); } } */
 		}
 
 		// *******************OTHER SETUP***************
@@ -181,19 +172,19 @@ public class MainGameLoop {
 		final WaterTile water = new WaterTile(400, 400, 0);
 
 		final List<WaterTile> lavas = new ArrayList<>();
-		for(int x = 400; x <= 2800; x += 800) {
-			for(int y = 400; y <= 2800; y += 800) {
-				final WaterTile lava = new WaterTile(x, y, 0);
+		for (int x = 400; x <= 2800; x += 800) {
+			for (int y = 400; y <= 2800; y += 800) {
+				final WaterTile lava = new WaterTile(x, y, -30);
 				lavas.add(lava);
 			}
 		}
 
 		sun.setPosition(new Vector3f(339868.97f, -933593.25f, 339868.97f));
 		normalMapEntities.add(player);
-		// lights.add(player.light);
+		lights.add(player.light);
 		// ****************Game Loop Below*********************
 
-		while(!Display.isCloseRequested()) {
+		while (!Display.isCloseRequested()) {
 			player.move(terrains);
 			camera.move();
 			picker.update();
@@ -207,27 +198,29 @@ public class MainGameLoop {
 			final float distance = 2 * (camera.getPosition().y - water.getHeight());
 			camera.getPosition().y -= distance;
 			camera.invertPitch();
-			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1), grassTexture.getID(), mudTexture.getID());
+			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1), grassTexture.getID(),
+			        mudTexture.getID());
 			camera.getPosition().y += distance;
 			camera.invertPitch();
 
 			// render refraction texture
 			buffers.bindRefractionFrameBuffer();
-			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight() + 1), grassTexture.getID(), mudTexture.getID());
+			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight() + 1), grassTexture.getID(),
+			        mudTexture.getID());
 
 			// render to screen
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			buffers.unbindCurrentFrameBuffer();
 			boolean[] texDays = renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, -1, 0, 100000), grassTexture.getID(),
-					mudTexture.getID());
-			waterRenderer.render(lavas, camera, sun);
+			        mudTexture.getID());
+			waterRenderer.render(lavas, camera, sun, texDays);
 			// lavaRenderer.render(lavas, camera, sun, texDays);
 			ParticleMaster.renderParticles(camera);
 			guiRenderer.render(guiTextures);
 			TextMaster.render();
 
-			for(WaterTile wt : lavas) {
-				wt.move();
+			for (WaterTile wt : lavas) {
+				// wt.move();
 			}
 
 			DisplayManager.loop();
