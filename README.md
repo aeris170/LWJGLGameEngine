@@ -1,4 +1,6 @@
 # LWJGL Game Engine
+![social](https://repository-images.githubusercontent.com/146558000/cdf2e400-a20e-11e9-922c-b2644da642f2)
+
 OpenGL playground for me. Having fun in my spare time!
 
 ## Screenshots:
